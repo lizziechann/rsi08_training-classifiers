@@ -9,8 +9,8 @@ import torch.optim as optim
 import time
 
 transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    [transforms.ToTensor(),#converts image to pytorch tensor and scales pixels
+     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]) #normalise color channel
 
 batch_size = 4
 
@@ -26,12 +26,12 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                          shuffle=False, num_workers=0)
 
 classes = ('plane', 'car', 'bird', 'cat',
-           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+            'deer', 'dog', 'frog', 'horse', 'ship', 'truck') 
 
 def imshow(img):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.imshow(np.transpose(npimg, (1, 2, 0))) #rearrange dimensions cause matplotlib uses HWC
     plt.show()
     plt.savefig('training_samples.png')  # Save to file instead of showing
     plt.pause(3)
@@ -41,15 +41,15 @@ def imshow(img):
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv1 = nn.Conv2d(3, 6, 5) 
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120) #process of defining 3 layers
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv1(x))) #convolve, relu, pool
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1) # flatten all dimensions except batch
         x = F.relu(self.fc1(x))
@@ -70,8 +70,8 @@ if __name__ == '__main__':
     # print labels
     print(' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size))) for j in range(batch_size)))
 
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    criterion = nn.CrossEntropyLoss() #measuring wrongness
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9) #smooths steps by adding memory of past direction
 
     for epoch in range(2):  # loop over the dataset multiple times
         running_loss = 0.0
@@ -83,10 +83,10 @@ if __name__ == '__main__':
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
+            outputs = net(inputs) #runs forward pass
+            loss = criterion(outputs, labels) #compares predicted classes vs true classes
             loss.backward()
-            optimizer.step()
+            optimizer.step() #updates the weights
 
             # print statistics
             running_loss += loss.item()
@@ -97,14 +97,14 @@ if __name__ == '__main__':
     print('Finished Training')
     
     PATH = './cifar_net.pth'
-    torch.save(net.state_dict(), PATH)
+    torch.save(net.state_dict(), PATH) #saving model
     
     dataiter = iter(testloader)
     images, labels = next(dataiter)
     
     # print images
     imshow(torchvision.utils.make_grid(images))
-    print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+    print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4))) #actual labels
 
     # Load the model for testing
     net = Net()
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # Test on the same images we showed earlier
     outputs = net(images)
-    _, predicted = torch.max(outputs, 1)
+    _, predicted = torch.max(outputs, 1) #which class has higher score
     print('Predicted: ', ' '.join(f'{classes[predicted[j]]:5s}' for j in range(4)))
 
     # Calculate overall accuracy
