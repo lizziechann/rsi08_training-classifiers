@@ -6,6 +6,7 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import time
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
@@ -31,7 +32,9 @@ def imshow(img):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
     plt.savefig('training_samples.png')  # Save to file instead of showing
+    plt.pause(3)
     plt.close()  # Close immediately
     print("Training samples saved to 'training_samples.png'")
 
@@ -53,6 +56,8 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+        
+net = Net()
 
 # CRITICAL: Everything must be inside this block - FIXED INDENTATION
 if __name__ == '__main__':
@@ -60,11 +65,15 @@ if __name__ == '__main__':
     dataiter = iter(trainloader)
     images, labels = next(dataiter)
 
+    # show images
+    imshow(torchvision.utils.make_grid(images)) 
+    # print labels
+    print(' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size))) for j in range(batch_size)))
+
     print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
     # print labels
     print('Sample labels: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size)))
 
-    net = Net()
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
