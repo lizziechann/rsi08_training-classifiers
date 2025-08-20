@@ -70,11 +70,6 @@ if __name__ == '__main__':
     # print labels
     print(' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size))) for j in range(batch_size)))
 
-    print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
-    # print labels
-    print('Sample labels: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size)))
-
-
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -103,6 +98,13 @@ if __name__ == '__main__':
     
     PATH = './cifar_net.pth'
     torch.save(net.state_dict(), PATH)
+    
+    dataiter = iter(testloader)
+    images, labels = next(dataiter)
+    
+    # print images
+    imshow(torchvision.utils.make_grid(images))
+    print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
 
     # Load the model for testing
     net = Net()
